@@ -106,6 +106,7 @@ func OpenFile(path string, readOnly bool) (Storage, error) {
 	}
 
 	// 创建地个空lock文件, 再系统调用syscall.lock
+	// flock: &unixFileLock{ f: os.OpenFile()返回 }
 	flock, err := newFileLock(filepath.Join(path, "LOCK"), readOnly)
 	if err != nil {
 		return nil, err

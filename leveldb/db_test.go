@@ -57,6 +57,8 @@ func testingPreserveOnFailed(t *testing.T) func() (preserve bool, err error) {
 	}
 }
 
+// n.马具；挽具；（用于人，起固定或保护作用的）背带
+// v.控制；给（马等）上挽具；用挽具把…套到…上
 type dbHarness struct {
 	t *testing.T
 
@@ -80,6 +82,8 @@ func newDbHarness(t *testing.T) *dbHarness {
 func (h *dbHarness) init(t *testing.T, o *opt.Options) {
 	gomega.RegisterTestingT(t)
 	h.t = t
+
+	// 这里面会创建LOCK文件
 	h.stor = testutil.NewStorage()
 	h.stor.OnLog(testingLogger(t))
 	h.stor.OnClose(testingPreserveOnFailed(t))
@@ -557,6 +561,7 @@ func testAligned(t *testing.T, name string, offset uintptr) {
 	}
 }
 
+// 对齐测试, 不难理解
 func Test_FieldsAligned(t *testing.T) {
 	p1 := new(DB)
 	testAligned(t, "DB.seq", unsafe.Offsetof(p1.seq))
@@ -567,11 +572,20 @@ func Test_FieldsAligned(t *testing.T) {
 	testAligned(t, "session.stSeqNum", unsafe.Offsetof(p2.stSeqNum))
 }
 
+// 互斥锁测试, 一个db目录只能一个session打开
 func TestDB_Locking(t *testing.T) {
+
+	// 会在临时目录创建LOCK, 锁住了
 	h := newDbHarness(t)
 	defer h.stor.Close()
+
+	// 这里再次open, 正常是会失败的
 	h.openAssert(false)
+
+	// 关闭db, 释放锁
 	h.closeDB()
+
+	// 再次open, 正常是可以的
 	h.openAssert(true)
 }
 
