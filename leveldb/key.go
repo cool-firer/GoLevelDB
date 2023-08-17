@@ -81,10 +81,10 @@ func makeInternalKey(dst, ukey []byte, seq uint64, kt keyType) internalKey {
 	}
 
 	dst = ensureBuffer(dst, len(ukey)+8) // 取一个能容纳的[]byte
-	copy(dst, ukey) // 先把 len(key) key 写入 dst
+	copy(dst, ukey) // 先把 key 写入 dst
 
 	// 再写入 seq << 8 | kt
-	// 此时的dst: len(key) key 8字节(seq << 8 | kt)
+	// 此时的dst: key 8字节(seq << 8 | kt)
 	binary.LittleEndian.PutUint64(dst[len(ukey):], (seq<<8)|uint64(kt))
 	return internalKey(dst)
 }

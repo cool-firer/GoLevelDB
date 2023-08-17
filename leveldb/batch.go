@@ -97,7 +97,7 @@ func (b *Batch) appendRec(kt keyType, key, value []byte) {
 	data[o] = byte(kt) // 接在原来后面
 	o++
 
-	// 
+	// 这里应该用 uint32(len(key))
 	o += binary.PutUvarint(data[o:], uint64(len(key)))
 	index.keyPos = o
 	index.keyLen = len(key)
@@ -110,6 +110,8 @@ func (b *Batch) appendRec(kt keyType, key, value []byte) {
 	}
 	b.data = data[:o]
 	b.index = append(b.index, index)
+
+	// 这个internal就是计算机实际存储的, len(key) + 4字节key长度
 	b.internalLen += index.keyLen + index.valueLen + 8
 }
 

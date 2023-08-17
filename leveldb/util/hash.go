@@ -11,6 +11,7 @@ import (
 )
 
 // Hash return hash of the given data.
+// seed: 0xbc9f1d34
 func Hash(data []byte, seed uint32) uint32 {
 	// Similar to murmur hash
 	const (
@@ -28,6 +29,7 @@ func Hash(data []byte, seed uint32) uint32 {
 		h ^= (h >> 16)
 	}
 
+	// 这步相当于小端
 	switch len(data) - i {
 	default:
 		panic("not reached")
